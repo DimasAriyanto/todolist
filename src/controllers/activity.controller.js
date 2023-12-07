@@ -30,8 +30,7 @@ const getOne = async (req, res, next) => {
 
 const create = async (req, res, next) => {
   try {
-    const { email, title } = req.body;
-    const result = await activityRepository.createActivity({ email, title });
+    const result = await activityRepository.createActivity(req);
     res.status(201).json({
       status: 'Success',
       message: 'Success',

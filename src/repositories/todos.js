@@ -1,4 +1,4 @@
-const { Transaction, ForeignKeyConstraintError } = require('sequelize');
+const { Transaction } = require('sequelize');
 const { sequelize, Todo } = require('../models');
 const { BadRequestError, NotFoundError } = require('../errors');
 
@@ -50,7 +50,7 @@ const getTodoById = async (id) => {
 
 const createTodo = async (req) => {
   const { activity_group_id, title, priority } = req.body;
-  if (title === undefined) throw new BadRequestError('title cannot be null');
+  if (!title) throw new BadRequestError('title cannot be null');
 
   const result = await sequelize.transaction(
     { isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED },
@@ -107,13 +107,11 @@ const updateTodo = async (req) => {
         {
           title: title,
           priority: priority,
-          is_active: is_active
+          is_active: is_active,
         },
         { where: { id: id } },
         { transaction }
       );
-
-      if (updated[0] === 0) throw new NotFoundError(`Todo with ID ${id} Not Found`);
 
       const updatedTodoData = await Todo.findOne(
         { where: { id: id } },

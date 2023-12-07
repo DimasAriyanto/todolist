@@ -34,21 +34,28 @@ const getActivityById = async (req) => {
   return result;
 };
 
-const createActivity = async (activity) => {
-  if (activity.email === undefined) throw new BadRequestError('email cannot be null');
-  if (activity.title === undefined) throw new BadRequestError('title cannot be null');
+const createActivity = async (req) => {
+  const { email, title } = req.body;
+  if (!email) throw new BadRequestError('email cannot be null');
+  if (!title) throw new BadRequestError('title cannot be null');
 
   const result = await sequelize.transaction(
     { isolationLevel: Transaction.ISOLATION_LEVELS.READ_COMMITTED },
     async (transaction) => {
       const check = await Activity.findOne({
         where: {
-          email: activity.email,
+          email: email,
         },
       });
 
       if (check) throw new BadRequestError('Email duplicated');
-      const newActivity = await Activity.create(activity, { transaction });
+      const newActivity = await Activity.create(
+        {
+          email: email,
+          title: title,
+        },
+        { transaction }
+      );
       return newActivity;
     }
   );
