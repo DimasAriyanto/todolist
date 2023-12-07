@@ -19,7 +19,7 @@ const getOne = async (req, res, next) => {
     const { id } = req.params;
     await todoRepository.checkAvailableTodo(id);
     
-    const result = await todoRepository.getTodoById(req);
+    const result = await todoRepository.getTodoById(id);
     res.status(200).json({
       status: 'Success',
       message: 'Success',
@@ -49,6 +49,8 @@ const create = async (req, res, next) => {
 const remove = async (req, res, next) => {
   try {
     const { id } = req.params;
+    await todoRepository.checkAvailableTodo(id);
+
     const result = await todoRepository.deleteTodo(id);
     res.status(200).json({
       status: 'Success',
